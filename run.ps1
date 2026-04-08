@@ -5,14 +5,15 @@ Clear-Host
 $base = "https://tools.suyena.com/scripts"
 
 Write-Host "--- Asad's Toolbox [tools.suyena.com] ---" -ForegroundColor Cyan
-Write-Host "1. J2P (Image to PDF & ID Resize)"
-Write-Host "2. LIMG (Parallel 500% Resize)"
-Write-Host "3. V2IMG (Fast Frame Extraction)"
-Write-Host "4. VMIRROR (Video Horizontal Flip)"
-Write-Host "5. W2P (Office to PDF - Windows Only)"
-Write-Host "6. DOWN (High-Speed RAM Download)"
-Write-Host "7. PNG2JPG (Convert PNG to JPEG)"
-Write-Host "8. LOG (Daily Progress Report)" -ForegroundColor Yellow # <--- Added Option
+Write-Host "1. Word, Excel to PDF (Office to PDF - Windows Only)"
+Write-Host "2. JPEG to PDF (Image to PDF & ID Resize)"
+Write-Host "3. PDF to JPEG (High-Res PDF to JPEG)" -ForegroundColor Magenta
+Write-Host "4. PNG to JPEG (Convert PNG to JPEG)"
+Write-Host "5. Video to Images (Fast Frame Extraction)"
+Write-Host "6. Enlarge Image (Parallel 500% Resize)"
+Write-Host "7. Flip the Video (Video Horizontal Flip)"
+Write-Host "8. Download on RAM (High-Speed RAM Download)"
+Write-Host "9. Write Log (Daily Progress Report)" -ForegroundColor Yellow
 Write-Host "0. Exit"
 
 $choice = Read-Host "`nSelect a tool number"
@@ -65,14 +66,15 @@ function Write-DailyLog {
 
 # --- Menu Logic ---
 switch ($choice) {
-    "1" { Run-Tool "j2p.py" "Pillow" }
-    "2" { Run-Tool "limg.py" "Pillow" }
-    "3" { Run-Tool "v2img.py" "opencv-python" }
-    "4" { Run-Tool "VMirror.py" "" }
-    "5" { Run-Tool "w2p.py" "pywin32" }
-    "6" { Run-Tool "down.py" "requests" }
-    "7" { Run-Tool "png2jpg.py" "Pillow" }
-    "8" { Write-DailyLog } # <--- New Switch Case
+    "1" { Run-Tool "w2p.py" "pywin32" }
+    "2" { Run-Tool "j2p.py" "Pillow" }
+    "3" { Run-Tool "pdf2jpg.py" "PyMuPDF" }
+    "4" { Run-Tool "png2jpg.py" "Pillow" }
+    "5" { Run-Tool "v2img.py" "opencv-python" }
+    "6" { Run-Tool "limg.py" "Pillow" }
+    "7" { Run-Tool "VMirror.py" "" }
+    "8" { Run-Tool "down.py" "requests" }
+    "9" { Write-DailyLog } 
     "0" { exit }
     Default { 
         Write-Host "Invalid selection." -ForegroundColor Red 
