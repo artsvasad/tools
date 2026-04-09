@@ -1,51 +1,54 @@
-# --- Sovereign Toolbox Launcher (Finalized Architecture) ---
+# --- Sovereign Toolbox Launcher (Zero-Cache Architecture) ---
 # Location: D:\UserData\OneDrive\Desktop\run.ps1
 
 $base = "https://tools.suyena.com/scripts"
-$CacheDir = Join-Path $env:USERPROFILE ".suyena_cache"
+$WorkspaceDir = Join-Path $env:USERPROFILE ".suyena_workspace"
 
-# Ensure local cache directory exists for offline sovereignty
-if (-not (Test-Path $CacheDir)) {
-    New-Item -ItemType Directory -Path $CacheDir -Force | Out-Null
+# Ensure local workspace exists for quarantine and venv preservation
+if (-not (Test-Path $WorkspaceDir)) {
+    New-Item -ItemType Directory -Path $WorkspaceDir -Force | Out-Null
 }
 
-# --- Function for Remote Python Tools (Isolated & Tracked) ---
+# --- Function for Remote Python Tools (Live Synchronization) ---
 function Run-Tool($name, $deps) {
-    $localPath = Join-Path $CacheDir $name
-    $venvPath = Join-Path $CacheDir "venv"
+    $localPath = Join-Path $WorkspaceDir $name
+    $venvPath = Join-Path $WorkspaceDir "venv"
     $pythonExe = Join-Path $venvPath "Scripts\python.exe"
     $pipExe = Join-Path $venvPath "Scripts\pip.exe"
     
-    # Telemetry Hook: Update Window Title for ActivityWatch precision
+    # Telemetry Hook for ActivityWatch precision
     $originalTitle = $Host.UI.RawUI.WindowTitle
     $Host.UI.RawUI.WindowTitle = "[Sovereign Operations] - Executing: $name"
 
-    # Quarantine Setup: Ensure Virtual Environment exists
+    # Quarantine Setup: Maintain environment to preserve velocity
     if (-not (Test-Path $venvPath)) {
         Write-Host "`n[!] Constructing isolated containment environment..." -ForegroundColor Yellow
         python -m venv $venvPath | Out-Null
     }
     
-    # Cache Miss: Download and install dependencies into quarantine
-    if (-not (Test-Path $localPath)) {
-        Write-Host "[!] Synchronizing $name to local cache..." -ForegroundColor Yellow
-        try {
-            Invoke-RestMethod -Uri "$base/$name" -OutFile $localPath -ErrorAction Stop
-            
-            if ($deps) { 
-                Write-Host "[+] Injecting dependencies ($deps) into quarantine..." -ForegroundColor Gray
-                & $pipExe install $deps --quiet 
-            }
-            Write-Host "[+] Synchronization complete." -ForegroundColor Green
+    # ZERO-CACHE PROTOCOL: Forcefully overwrite local payload with master data
+    Write-Host "`n[!] Synchronizing live payload: $name..." -ForegroundColor Yellow
+    try {
+        Invoke-RestMethod -Uri "$base/$name" -OutFile $localPath -ErrorAction Stop
+        
+        # Inject missing dependencies silently
+        if ($deps) { 
+            $depArray = $deps -split " "
+            Write-Host "[+] Verifying dependencies..." -ForegroundColor Gray
+            & $pipExe install $depArray --quiet 
         }
-        catch {
-            Write-Host "[-] Execution Failure: Could not synchronize $name. Verify uplink." -ForegroundColor Red
+        Write-Host "[+] Payload secured." -ForegroundColor Green
+    }
+    catch {
+        Write-Host "[-] Live synchronization failed. Attempting offline execution..." -ForegroundColor DarkYellow
+        if (-not (Test-Path $localPath)) {
+            Write-Host "[-] Fatal: No local module found. Aborting." -ForegroundColor Red
             $Host.UI.RawUI.WindowTitle = $originalTitle
             return
         }
     }
 
-    # Execute from high-speed local cache using isolated Python binary
+    # Execute from overwritten payload
     try {
         Write-Host "`n[+] Executing $name...`n" -ForegroundColor Green
         & $pythonExe $localPath
@@ -79,7 +82,7 @@ function Write-DailyLog {
     $null = [System.Console]::ReadKey($true)
 }
 
-# --- Infinite Loop Architecture (Prevents Stack Overflow) ---
+# --- Infinite Loop Architecture ---
 while ($true) {
     Clear-Host
     Write-Host "╔═══════════════════════════════════════════════════╗" -ForegroundColor Cyan
@@ -112,8 +115,6 @@ while ($true) {
     # --- CATEGORY 4: OPERATIONS & TRACKING ---
     Write-Host "┌── [ OPERATIONS & TRACKING ] ──────────────────────┐" -ForegroundColor DarkYellow
     Write-Host "│ 11. Write Log (Daily Progress Report)             │" -ForegroundColor Yellow
-    Write-Host "│                                                   │"
-    Write-Host "│ 99. Force Update Tools (Clear Cache)              │" -ForegroundColor DarkRed
     Write-Host "└───────────────────────────────────────────────────┘" -ForegroundColor DarkYellow
     Write-Host ""
     Write-Host "   0. Exit System" -ForegroundColor Red
@@ -132,13 +133,7 @@ while ($true) {
         "8"  { Run-Tool "ytdl.py" "yt-dlp ffmpeg-python" }     
         "9"  { Run-Tool "down.py" "requests" }     
         "10" { Run-Tool "allocate.py" "" }         
-        "11" { Write-DailyLog }   
-        "99" { 
-            Write-Host "`n[!] Purging local cache..." -ForegroundColor Red
-            Remove-Item -Path "$CacheDir\*" -Force -Recurse -ErrorAction SilentlyContinue
-            Write-Host "[+] Cache cleared. Tools will redownload on next execution." -ForegroundColor Green
-            Start-Sleep -Seconds 2
-        }                 
+        "11" { Write-DailyLog }                   
         "0"  { exit }
         Default { 
             Write-Host "Invalid parameter. Recalibrating." -ForegroundColor Red 
