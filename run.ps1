@@ -15,6 +15,7 @@ Write-Host "7. Flip the Video (Video Horizontal Flip)"
 Write-Host "8. Download on RAM (High-Speed RAM Download)"
 Write-Host "9. Write Log (Daily Progress Report)" -ForegroundColor Yellow
 Write-Host "10. Create a large file (Generate a large dummy file for testing)" -ForegroundColor Green
+Write-Host "11. YouTube Downloader (Download YouTube videos with yt-dlp)" -ForegroundColor Blue
 Write-Host "0. Exit"
 
 $choice = Read-Host "`nSelect a tool number"
@@ -77,6 +78,7 @@ switch ($choice) {
     "8" { Run-Tool "down.py" "requests" }
     "9" { Write-DailyLog } 
     "10" { Run-Tool "allocate.py" "" }
+    "11" {Run-Tool "ytdl.py" "yt-dlp"}
     "0" { exit }
     Default { 
         Write-Host "Invalid selection." -ForegroundColor Red 
