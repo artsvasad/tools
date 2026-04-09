@@ -1,6 +1,14 @@
 # --- Sovereign Toolbox Launcher (Zero-Cache Architecture) ---
 # Location: D:\UserData\OneDrive\Desktop\run.ps1
 
+# [!] TACTICAL KILL-SWITCH: Eradicate legacy cache structures unconditionally
+$LegacyCache = Join-Path $env:USERPROFILE ".suyena_cache"
+if (Test-Path $LegacyCache) {
+    Write-Host "`n[!] Purging senescent legacy directory: $LegacyCache..." -ForegroundColor Red
+    Remove-Item -Path $LegacyCache -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "[+] Legacy cache destroyed." -ForegroundColor DarkGray
+}
+
 $base = "https://tools.suyena.com/scripts"
 $WorkspaceDir = Join-Path $env:USERPROFILE ".suyena_workspace"
 
@@ -23,7 +31,7 @@ function Run-Tool($name, $deps) {
     # Quarantine Setup: Maintain environment to preserve velocity
     if (-not (Test-Path $venvPath)) {
         Write-Host "`n[!] Constructing isolated containment environment..." -ForegroundColor Yellow
-        python -m venv $venvPath | Out-Null
+        & python -m venv $venvPath | Out-Null
     }
     
     # ZERO-CACHE PROTOCOL: Forcefully overwrite local payload with master data
