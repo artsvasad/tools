@@ -1,7 +1,6 @@
 import os
 import sys
 import yt_dlp
-import ffmpeg
 
 def print_header():
     print("\n================================================")
@@ -37,21 +36,22 @@ def execute_pipeline():
     print("  5. Audio Extraction (M4A)")
     q_choice = get_input("[>] Select Protocol (1-5): ", ["1", "2", "3", "4", "5"])
 
-    # Base Configuration Options for yt-dlp
+    # Base Configuration Options for yt-dlp (Hardened for Fault Tolerance)
     ydl_opts = {
         'writethumbnail': True,
         'embed_metadata': True,
         'quiet': False,
         'no_warnings': True,
+        'download_archive': 'Sovereign_Archive_Ledger.txt', # Globally Enforced Tracker
+        'ignoreerrors': True,         # Continue on download errors (crucial for large playlists)
+        'windowsfilenames': True,     # Prevents OS-level 'Access Denied' on complex characters
     }
 
     # Dynamic Output Architecture
-    if t_choice in ["1", "2"]:
-        ydl_opts['download_archive'] = 'Sovereign_Archive_Ledger.txt'
-        if t_choice == "1":
-            ydl_opts['outtmpl'] = 'Sovereign_Vault/Channels/%(uploader)s/%(title)s_%(id)s.%(ext)s'
-        else:
-            ydl_opts['outtmpl'] = 'Sovereign_Vault/Playlists/%(playlist)s/%(title)s_%(id)s.%(ext)s'
+    if t_choice == "1":
+        ydl_opts['outtmpl'] = 'Sovereign_Vault/Channels/%(uploader)s/%(title)s_%(id)s.%(ext)s'
+    elif t_choice == "2":
+        ydl_opts['outtmpl'] = 'Sovereign_Vault/Playlists/%(playlist)s/%(title)s_%(id)s.%(ext)s'
     else:
         ydl_opts['outtmpl'] = 'Sovereign_Vault/Singles/%(title)s_%(id)s.%(ext)s'
 
@@ -85,10 +85,11 @@ def execute_pipeline():
             'format': format_code,
             'merge_output_format': container,
             'writesubtitles': True,
+            'writeautomaticsub': True, # FALLBACK: Auto-generated subs if manual subs are missing
             'subtitleslangs': ['en', 'bn'],
             'postprocessors': [
-                {'key': 'FFmpegEmbedSubtitle'},
                 {'key': 'FFmpegMetadata'},
+                {'key': 'FFmpegEmbedSubtitle', 'already_have_subtitle': False}, 
             ]
         })
         ext_msg = f"Ultra-Fidelity ({container.upper()})" if q_choice == "1" else f"Efficiency ({container.upper()})"
@@ -101,6 +102,9 @@ def execute_pipeline():
         print("\n[+] Extraction Complete. Assets secured within the Vault.")
     except yt_dlp.utils.DownloadError as e:
         print(f"\n[-] Ingestion Failure: {e}")
+    except KeyboardInterrupt:
+        print("\n[-] Manual Override. Pipeline Terminated.")
+        sys.exit(0)
     except Exception as e:
         print(f"\n[-] Critical System Error: {e}")
 
