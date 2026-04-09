@@ -129,7 +129,7 @@ while ($true) {
         "5"  { Run-Tool "limg.py" "Pillow" }       
         "6"  { Run-Tool "v2img.py" "opencv-python"}
         "7"  { Run-Tool "VMirror.py" "" }          
-        "8"  { Run-Tool "ytdl.py" "yt-dlp" }       
+        "8"  { Run-Tool "ytdl.py" "yt-dlp ffmpeg-python" }     
         "9"  { Run-Tool "down.py" "requests" }     
         "10" { Run-Tool "allocate.py" "" }         
         "11" { Write-DailyLog }   
