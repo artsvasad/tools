@@ -133,7 +133,7 @@ while ($true) {
     switch ($choice) {
         "1"  { Run-Tool "w2p.py" "pywin32" }       
         "2"  { Run-Tool "j2p.py" "Pillow" }        
-        "3"  { Run-Tool "pdf2jpg.py" "PyMuPDF"  "tqdm"}   
+        "3"  { Run-Tool "pdf2jpg.py" "PyMuPDF" "tqdm"}   
         "4"  { Run-Tool "png2jpg.py" "Pillow" }    
         "5"  { Run-Tool "limg.py" "Pillow" }       
         "6"  { Run-Tool "v2img.py" "opencv-python"}
