@@ -1,9 +1,7 @@
 import os
-import fitz  # PyMuPDF
+import fitz
 import concurrent.futures
 from multiprocessing import cpu_count
-
-# Ensure 'tqdm' is installed: pip install tqdm
 try:
     from tqdm import tqdm
 except ImportError:
