@@ -1,86 +1,95 @@
-import os
-import fitz
+import sys
+from pathlib import Path
 import concurrent.futures
 from multiprocessing import cpu_count
-try:
-    from tqdm import tqdm
-except ImportError:
-    print("[!] Critical: 'tqdm' library not found. Systemic efficiency requires: pip install tqdm")
-    exit(1)
 
-def process_page(args):
-    """
-    Atomic worker function. Ensures 2% marginal gain in stability 
-    by isolating file handles within each process.
-    """
-    pdf_path, page_num, mat, output_folder = args
+# Elite Dependency Audit
+try:
+    import fitz
+    from tqdm import tqdm
+except ImportError as e:
+    print(f"\n[!] Systemic Failure: Missing dependency -> {e.name}")
+    print("[!] Ensure deployment via Sovereign Launcher (run.ps1) with correct dependencies: PyMuPDF tqdm")
+    sys.exit(1)
+
+def extract_page(args_tuple):
+    """Atomic worker function utilizing GIL-released thread execution."""
+    pdf_path, page_num, zoom_factor, output_dir = args_tuple
     try:
-        # Re-opening the doc in each process ensures thread-safety and isolates memory load
-        doc = fitz.open(pdf_path)
+        # Isolated read operation per thread
+        doc = fitz.open(str(pdf_path))
         page = doc.load_page(page_num)
         
-        # High-fidelity rendering (300 DPI)
+        # High-fidelity rendering (Sovereign Standard: 300 DPI)
+        mat = fitz.Matrix(zoom_factor, zoom_factor)
         pix = page.get_pixmap(matrix=mat, alpha=False)
         
-        pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
-        target_name = f"{pdf_name}_page_{page_num + 1}.jpg"
-        out_path = os.path.join(output_folder, target_name)
+        target_name = f"{pdf_path.stem}_page_{page_num + 1}.jpg"
+        out_path = output_dir / target_name
         
-        pix.save(out_path)
+        pix.save(str(out_path))
         doc.close()
-        return True
+        return (True, None)
     except Exception as e:
-        return f"Error on {pdf_path} page {page_num}: {e}"
+        return (False, f"Target: {pdf_path.name} | Page {page_num + 1} | Error: {str(e)}")
 
-def convert_pdf_to_jpeg_optimized():
-    # Target all PDFs in the current execution workspace
-    pdfs = [f for f in os.listdir('.') if f.lower().endswith(".pdf")]
+def execute_sovereign_extraction():
+    workspace = Path('.')
+    pdfs = list(workspace.glob("*.pdf"))
     
     if not pdfs:
-        print("[!] No PDF files found in workspace.")
+        print("[-] Zero PDF assets detected in current workspace.")
         return
 
-    output_folder = "pdf_images_high_speed"
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    output_dir = workspace / "pdf_images_high_speed"
+    output_dir.mkdir(exist_ok=True)
 
-    # Standardizing on 300 DPI for optimal leverage
-    zoom = 300.0 / 72.0
-    mat = fitz.Matrix(zoom, zoom)
-
+    # Standardize scale: 300 DPI
+    zoom_factor = 300.0 / 72.0
     tasks = []
-    for pdf_file in pdfs:
+
+    print("[+] Auditing PDF assets for parallel thread deployment...")
+    for pdf in pdfs:
         try:
-            doc = fitz.open(pdf_file)
-            for page_num in range(len(doc)):
-                tasks.append((pdf_file, page_num, mat, output_folder))
+            # Pre-flight check to secure page counts rapidly
+            doc = fitz.open(str(pdf))
+            page_count = len(doc)
             doc.close()
+            for page_num in range(page_count):
+                tasks.append((pdf, page_num, zoom_factor, output_dir))
         except Exception as e:
-            print(f"[-] Data Corruption/Read Error in {pdf_file}: {e}")
+            print(f"[-] Asset Corruption Detected ({pdf.name}): {e}")
 
     total_tasks = len(tasks)
-    print(f"[*] Saturating hardware: Dispatching {total_tasks} pages across {cpu_count()} CPU cores...")
+    if total_tasks == 0:
+        return
 
-    # Using as_completed for dynamic, real-time progress reporting
-    with concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count()) as executor:
-        # Submit all tasks to the process pool
-        futures = [executor.submit(process_page, task) for task in tasks]
-        results = []
+    # Hyper-threading allocation (C-extension allows 2x core count safely)
+    optimal_threads = cpu_count() * 2
+    print(f"[*] Saturating hardware... Dispatching {total_tasks} operations across {optimal_threads} threads.")
+
+    success_count = 0
+    error_logs = []
+
+    # ThreadPoolExecutor is vastly superior here due to PyMuPDF GIL release.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=optimal_threads) as executor:
+        futures = [executor.submit(extract_page, task) for task in tasks]
         
-        # tqdm provides a visual pulse, iterations/sec, and precise Time Remaining (ETA)
         with tqdm(total=total_tasks, desc="Extraction Velocity", unit="pg", colour="green") as pbar:
             for future in concurrent.futures.as_completed(futures):
-                results.append(future.result())
+                success, error_msg = future.result()
+                if success:
+                    success_count += 1
+                else:
+                    error_logs.append(error_msg)
                 pbar.update(1)
 
-    # Integrity Audit
-    errors = [r for r in results if r is not True]
-    if not errors:
-        print(f"\n[+] Success: Full-spectrum extraction complete with maximum systemic leverage.")
-    else:
-        print(f"\n[!] Systemic Gaps ({len(errors)} errors detected):")
-        for err in errors:
+    print(f"\n[+] Operation Terminated. Yield: {success_count}/{total_tasks} pages secured.")
+    
+    if error_logs:
+        print(f"\n[!] Systemic Gaps Detected ({len(error_logs)}):")
+        for err in error_logs:
             print(f"    - {err}")
 
 if __name__ == "__main__":
-    convert_pdf_to_jpeg_optimized()
+    execute_sovereign_extraction()
