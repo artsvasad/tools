@@ -41,6 +41,7 @@ function Run-Tool($name, $deps) {
         
         # Inject missing dependencies silently
         if ($deps) { 
+            # Critical Fix: Array separation ensures pip processes multiple arguments correctly
             $depArray = $deps -split " "
             Write-Host "[+] Verifying dependencies..." -ForegroundColor Gray
             & $pipExe install $depArray --quiet 
@@ -133,10 +134,10 @@ while ($true) {
     switch ($choice) {
         "1"  { Run-Tool "w2p.py" "pywin32" }       
         "2"  { Run-Tool "j2p.py" "Pillow" }        
-        "3"  { Run-Tool "pdf2jpg.py" "PyMuPD tqdm"}   
+        "3"  { Run-Tool "pdf2jpg.py" "PyMuPDF tqdm" }   
         "4"  { Run-Tool "png2jpg.py" "Pillow" }    
         "5"  { Run-Tool "limg.py" "Pillow" }       
-        "6"  { Run-Tool "v2img.py" "opencv-python"}
+        "6"  { Run-Tool "v2img.py" "opencv-python" }
         "7"  { Run-Tool "VMirror.py" "" }          
         "8"  { Run-Tool "ytdl.py" "yt-dlp ffmpeg-python" }     
         "9"  { Run-Tool "down.py" "requests" }     
