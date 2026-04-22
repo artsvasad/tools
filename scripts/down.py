@@ -17,7 +17,7 @@ def main():
     while True:
         print(f"Cycle starting... Downloading 500 instances to RAM.")
         with ThreadPoolExecutor(max_workers=500) as exe:
-            results = list(exe.map(lambda u: download_to_ram(u, session), [url]*50))
+            results = list(exe.map(lambda u: download_to_ram(u, session), [url]*500))
         
         print(f"Cycle Complete. Total RAM processed: {sum(results)} bytes.")
         time.sleep(1)
