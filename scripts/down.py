@@ -16,7 +16,7 @@ def main():
     
     while True:
         print(f"Cycle starting... Downloading 9999 instances to RAM.")
-        with ThreadPoolExecutor(max_workers=9999) as exe:
+        with ThreadPoolExecutor(max_workers=10) as exe:
             results = list(exe.map(lambda u: download_to_ram(u, session), [url]*9999))
         
         print(f"Cycle Complete. Total RAM processed: {sum(results)} bytes.")
