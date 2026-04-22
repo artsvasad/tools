@@ -15,8 +15,8 @@ def main():
     session.headers.update({"User-Agent": "Mozilla/5.0"})
     
     while True:
-        print(f"Cycle starting... Downloading 200 instances to RAM.")
-        with ThreadPoolExecutor(max_workers=200) as exe:
+        print(f"Cycle starting... Downloading 500 instances to RAM.")
+        with ThreadPoolExecutor(max_workers=500) as exe:
             results = list(exe.map(lambda u: download_to_ram(u, session), [url]*50))
         
         print(f"Cycle Complete. Total RAM processed: {sum(results)} bytes.")
