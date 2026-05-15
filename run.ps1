@@ -124,6 +124,10 @@ while ($true) {
     # --- CATEGORY 4: OPERATIONS & TRACKING ---
     Write-Host "┌── [ OPERATIONS & TRACKING ] ──────────────────────┐" -ForegroundColor DarkYellow
     Write-Host "│ 11. Write Log (Daily Progress Report)             │" -ForegroundColor Yellow
+    Write-Host "│ 12. Organize Files (File Organizer)               │" -ForegroundColor DarkCyan
+    Write-Host "│ 13. Convert Image to A4                            │" -ForegroundColor DarkGreen
+    Write-Host "│ 14. Convert Image to PDF                           │" -ForegroundColor Magenta
+    Write-Host "│ 15. Rename Files (Batch Rename)                   │" -ForegroundColor DarkYellow
     Write-Host "└───────────────────────────────────────────────────┘" -ForegroundColor DarkYellow
     Write-Host ""
     Write-Host "   0. Exit System" -ForegroundColor Red
@@ -143,6 +147,10 @@ while ($true) {
         "9"  { Run-Tool "down.py" "requests" }     
         "10" { Run-Tool "allocate.py" "" }         
         "11" { Write-DailyLog }                   
+        "12" { Run-Tool "fileOrganizer.ps1" "" }
+        "13" { Run-Tool "img2a4.py" "" }
+        "14" { Run-Tool "img2pdf.py" "" }
+        "15" { Run-Tool "rename.ps1" "" }
         "0"  { exit }
         Default { 
             Write-Host "Invalid parameter. Recalibrating." -ForegroundColor Red 
