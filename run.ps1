@@ -57,10 +57,21 @@ function Run-Tool($name, $deps) {
         }
     }
 
-    # Execute from overwritten payload
+    # Execute from overwritten payload based on file type
     try {
         Write-Host "`n[+] Executing $name...`n" -ForegroundColor Green
-        & $pythonExe $localPath
+        
+        if ($localPath.EndsWith(".ps1")) {
+            # Execute as a PowerShell script
+            & powershell.exe -ExecutionPolicy Bypass -File $localPath
+        } 
+        elseif ($localPath.EndsWith(".py")) {
+            # Execute as a Python script inside the venv
+            & $pythonExe $localPath
+        } 
+        else {
+            Write-Host "[-] Unknown payload format: $name" -ForegroundColor Red
+        }
     }
     catch {
         Write-Host "[-] Execution Failure during runtime." -ForegroundColor Red
@@ -125,8 +136,8 @@ while ($true) {
     Write-Host "┌── [ OPERATIONS & TRACKING ] ──────────────────────┐" -ForegroundColor DarkYellow
     Write-Host "│ 11. Write Log (Daily Progress Report)             │" -ForegroundColor Yellow
     Write-Host "│ 12. Organize Files (File Organizer)               │" -ForegroundColor DarkCyan
-    Write-Host "│ 13. Convert Image to A4                            │" -ForegroundColor DarkGreen
-    Write-Host "│ 14. Convert Image to PDF                           │" -ForegroundColor Magenta
+    Write-Host "│ 13. Convert Image to A4                           │" -ForegroundColor DarkGreen
+    Write-Host "│ 14. Convert Image to PDF                          │" -ForegroundColor Magenta
     Write-Host "│ 15. Rename Files (Batch Rename)                   │" -ForegroundColor DarkYellow
     Write-Host "└───────────────────────────────────────────────────┘" -ForegroundColor DarkYellow
     Write-Host ""
