@@ -18,7 +18,7 @@ function Move-MediaOptimized {
     param (
         [string]$categoryPath,
         [array]$extensions,
-        [int]$batchSize = 200
+        [int]$batchSize = 500
     )
 
     Write-Host "Scanning for files for $(Split-Path $categoryPath -Leaf)..." -ForegroundColor Cyan
